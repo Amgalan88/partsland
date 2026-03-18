@@ -446,6 +446,39 @@
       </div>
     </main>
 
+    <!-- Нууц үгийн overlay -->
+    <div id="pw-overlay" style="
+      position:fixed;inset:0;z-index:9999;
+      background:rgba(0,0,0,0.75);
+      display:flex;align-items:center;justify-content:center;
+    ">
+      <div style="
+        background:#fff;border-radius:12px;padding:36px 32px;
+        min-width:300px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.3);
+      ">
+        <div style="font-size:22px;font-weight:700;margin-bottom:8px;">Парц Ланд</div>
+        <div style="color:#6b7280;font-size:14px;margin-bottom:20px;">Нууц үгээ оруулна уу</div>
+        <div style="display:flex;gap:8px;justify-content:center;align-items:center;">
+          <input id="pw-input" type="password" placeholder="Нууц үг" autofocus style="
+            border:1px solid #d1d5db;border-radius:8px;
+            padding:10px 14px;font-size:16px;outline:none;width:160px;
+            letter-spacing:4px;
+          " />
+          <button id="pw-toggle" title="Харагдах" style="
+            border:1px solid #d1d5db;border-radius:8px;
+            padding:10px 12px;font-size:16px;cursor:pointer;background:#f5f5f5;
+          ">👁</button>
+          <button id="pw-submit" style="
+            background:#111827;color:#fff;border:none;border-radius:8px;
+            padding:10px 18px;font-size:15px;cursor:pointer;
+          ">Нэвтрэх</button>
+        </div>
+        <div id="pw-err" style="color:#dc2626;font-size:13px;margin-top:12px;display:none;">
+          Нууц үг буруу байна!
+        </div>
+      </div>
+    </div>
+
     <script>
       const itemsEl = document.getElementById("items");
       const pRows = document.getElementById("p_rows");
@@ -647,6 +680,46 @@
       });
       sync();
       applyScales();
+
+      // Нууц үгийн хамгаалалт
+      (function () {
+        const PASS = "008800";
+        const overlay = document.getElementById("pw-overlay");
+        const input = document.getElementById("pw-input");
+        const err = document.getElementById("pw-err");
+        document.getElementById("pw-toggle").addEventListener("click", function () {
+          if (input.type === "password") {
+            input.type = "text";
+            this.textContent = "🙈";
+          } else {
+            input.type = "password";
+            this.textContent = "👁";
+          }
+        });
+        document.getElementById("pw-submit").addEventListener("click", checkPass);
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") checkPass();
+        });
+        document.querySelectorAll(".wrap.editor, main.sheet").forEach(function(el) {
+          el.style.filter = "blur(6px)";
+          el.style.userSelect = "none";
+          el.style.pointerEvents = "none";
+        });
+        function checkPass() {
+          if (input.value === PASS) {
+            overlay.style.display = "none";
+            document.querySelectorAll(".wrap.editor, main.sheet").forEach(function(el) {
+              el.style.filter = "";
+              el.style.userSelect = "";
+              el.style.pointerEvents = "";
+            });
+          } else {
+            err.style.display = "block";
+            input.value = "";
+            input.focus();
+          }
+        }
+      })();
     </script>
   </body>
 </html>
